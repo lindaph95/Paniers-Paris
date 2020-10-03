@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Paniers Paris {% endblock %}</title>
+
+    {% block stylesheets %}
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"/>
+        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-grid.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    {% endblock %}
+</head>
+
+<body>
+{% block header %}
+<header id="header">
+
+    <div class="container">
+
+        <div class="row">
+
+            {# LOGO #}
+            <div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
+                <a href="{{ path('index') }}"> <img src="{{ asset('assets/img/Logo_blanc.png') }}"
+                                                    alt="Logo Paniers Paris" id="logo"/> </a>
+            </div>
+
+            {# HAMBURGER POUR VERSION MOBILE #}
+            <div>
+                <img src="{{ asset ('assets/img/menuHamburger.png') }}" alt="Menu" id="menuHamburger"/>
+            </div>
+
+            {# NAV #}
+            <div class="nav col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
+                <nav id="navHeader" class="text-center text-nowrap">
+                    <a href="{{ path('index') }}"> <img src="{{ asset ('assets/img/puce_nav_blanc.png') }}"
+                                                        alt="puce_nav_blanc"/> Concept</a>
+                    <a href="{{ path('paniers') }}"> <img src="{{ asset ('assets/img/puce_nav_blanc.png') }}"
+                                                          alt="puce_nav_blanc"/> Paniers du
+                        mois</a>
+                    <a href="{{ path('commande') }}"> <img src="{{ asset ('assets/img/puce_nav_blanc.png') }}"
+                                                           alt="puce_nav_blanc"/> Ma Commande </a>
+                </nav>
+            </div>
+
+            {# SE CONNECTER/ CREER UN COMPTE/MA COMMANDE #}
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+
+                <div class="infoscompte">
+
+                    {% block login %}
+                    
+                        {% if not app.user %}
+
+                            <form action="{{ path('app_login') }}" method="POST">
+                                <h5><i class="fas fa-user-alt"> </i> <a href="#">&nbsp; Mon compte </a></h5>
+
+
+                                <input type="text" name="pseudo" placeholder="Votre pseudo">
+                                <input type="password" name="password" placeholder="Votre mot de passe">
+                                <a class="btnheader" href="{{ path('app_register') }}"> Inscription </a>
+
+                                <button type="submit"> Connexion</button>
+
+
+                                <input type="hidden" name="_csrf_token"
+                                       value="{{ csrf_token('authenticate') }}">
+                                
+                             </form>
+
+                        
+                    {% else %}
+
+                        <h5> <i class="fas fa-user-alt"> </i> <a href="{{ path('user',{id: app.user.id}) }}"> {{ app.user.pseudo }} </a></h5>
+                        <br>
+                        
+                        {% if is_granted('ROLE_ADMIN') %}
+                           <a class="btnheader" href="{{path('admin',{id: app.user.id}) }}"> Admin </a>
+                           <br>
+                           <br>
+                        {% endif %}
+                        
+                        <a class="btnheader" href="{{ path('user',{id: app.user.id}) }}"> Profil </a>
+                        <a class="btnheader" href="{{ path('app_logout') }}"> Se déconnecter </a><br><br>
+          
+                        <h5> <a href="{{ path('commande') }}"> 
+                        <span> {{ serviceCommand.quantite() }} </span> &nbsp;
+                        <i class="fas fa-shopping-basket"> </i> &nbsp; Ma commande 
+                        </a> </h5>
+                                       
+
+                    {% endif %}
+
+
+                    {% endblock %}
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+{% endblock %}
+{% block body %}
+{% endblock %}
+
+{% block footer %}
+<footer id="footer">
+
+    <div class="container">
+
+        <div class="row">
+
+            {# NEWSLETTER #}
+            <div class="newsletter col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                {% set form_newsletter = serviceNewsletter.formNewsletter() %}
+                {{ form_start(form_newsletter, { attr: {id: "formRecevoirNewsletter", action: path('app_newsletter')}}) }}
+                    <p>
+                        <small> <i class="far fa-envelope"></i> &nbsp;Recevoir notre newsletter</small>
+                    </p>
+                    {{ form_widget(form_newsletter.email, {attr: {id:"emailNewsletter", placeholder: "Votre email"}}) }}
+                    <input type="submit" name="confirmation_newsletter" value="Confirmer"/>
+
+                    {# affichage texte avec js #}
+                    <p><small id="txtConfNewsletter"> </small></p>
+                {{ form_end(form_newsletter) }}
+            </div>
+
+            {# NAV #}
+            <div class="navfooter col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                <nav>
+
+                    <a href="{{ path('app_register') }}"> <img src="{{ asset ('assets/img/puce_nav_blanc.png') }}"
+                                                               alt="puce_nav_blanc"/> Créer un compte</a>
+                    <a href="{{ path('app_contact') }}"><img src="{{ asset ('assets/img/puce_nav_blanc.png') }}"
+                                                         alt="puce_nav_blanc"/> Nous contacter</a>
+                    <a href="{{ path('app_mentions') }}"> <img src="{{ asset ('assets/img/puce_nav_blanc.png') }}"
+                                                           alt="puce_nav_blanc"/>Mentions légales</a>
+                </nav>
+            </div>
+
+            {# RS #}
+            <div class="reseaux col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                <p><small>Restons connectés</small></p>
+                <a href="https://fr-fr.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/?hl=fr" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com/explore" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+
+        {# CREDITS #}
+        <div class="row">
+            <p id="credits" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <span>&copy; &nbsp; Bastien DAUGENNE, Sarah HAMI, Linda PHAN </span>
+            </p>
+        </div>
+
+    </div>
+
+</footer>
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ asset('assets/javascript/script_communaute.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_compte.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_footer.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_formcontact.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_header.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_index.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_index1.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_mentions.js') }}"></script>
+    <script src="{{ asset('assets/javascript/script_modalnewsletter.js') }}"></script>
+{% endblock %}
+</body>
+</html>
